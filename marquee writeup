@@ -1,0 +1,90 @@
+TinyMarquee: an Attiny24 based stock ticker
+
+Ever looked at a scrolling LED marquee, displaying news headlines and other worldly information, and thought, "hey. I'd be cool to have one of those".  Well, as a little project we've built one from the ground up, hardware, firmware, drivers and all. Hopefully these notes will provide some direction if you want to embark on a similar project. 
+
+Contents:
+-- Software
+-- -- Scraping news headlines
+-- -- Collecting stock data
+-- -- Custom bitmap fonts
+-- -- A terminal news and stock ticker
+-- Hardware
+-- -- Overview
+-- -- Charlieplexing
+-- -- PCB design
+-- -- Part sourcing
+-- -- Assembly
+-- -- Cleaning the boards
+-- Firmware
+-- -- Software serial
+-- -- Driving a charlieplexed array
+
+-- Software
+
+-- -- Collecting stock data
+
+The python module <a href="http://goldb.org/ystockquote.html">ystockquote</a> can be used to pull stock prices and other information from Yahoo finance. I'm not sure how picky Yahoo is about scraping, but since the stock prices aren't updated terribly often, we can be conservative about our price polling and go easy on their servers. With this script, grabbing a stock price is as easy as "get_price(stockname)". 
+
+-- -- Custom bitmap fonts
+
+Ae need a way to translating text into a format that we can send to a scrolling marquee. I send raw pixels to the marquee so that I can adjust fonts and graphics without re-loading the firmware. To accomplish this, I send new columns as 5-bit integers over serial. But before we get to that, we need to make a 5-pixel high font. I used Gimp to draw a font and a short Jython script to convert it into bit-packed integers representing columns of pixels for each letter. If you don't have Jython or a working JVM installed, it may be easier for you to re-enter the font as text data and write a short conversion routine in python.
+
+-- -- A terminal news and stock ticker
+
+To test it all out, we have a small terminal app which reads in the stock prices and scrolls it across the screen. This is a hasty hack before proceeding to the hardware marquee. It demonstrates parsing the bitmap font file and translating the news string into a sequence of pixel data to be scrolled across the screen. It's been tested only on linux. 
+
+-- Hardware
+
+This section covers the hardware design and concepts -- including how we lay out and connect a jillion little LEDs without going insane, and drive them all with a modest 10 IO pins on an AtTiny24.
+
+-- -- Overview
+
+Overall, the board design concept is thus: We have a 5x18 array of 90 3mm LEDs for the display, which are driven by 10 pins on an AtTiny24 using charlieplexing. We use the one remaining free IO pin to listen on a serial line, and a USB to TTL serial converter to connect it up to a machine to recieve data. Thats about it!. 
+
+-- -- Charlieplexing
+
+Charlieplexing is a way to drive tons of LEDs form only a few pins. <a href="http://en.wikipedia.org/wiki/Charlieplexing">The wiki page</a> probably explians this better than I ever could.  Essentially, since LEDs only light up when current is passed in one direction, you can place two LEDs for every unique pair of IO lines at your disposal. This lets you drive N*(N-1) LEDs from N IO pins. This sounds complicated, but if you're familiar with multiplexing ther's a simple way to understand it. When you multiplex an NxN grid of LEDs, you use N IO lines to control power to the (-) ends of the LEDs, and N IO lines to control power to the (+) ends of the LEDs. You make an NxN grid, where, for example, all LEDs in the Ith row connect to the Ith (-) line, and all LEDs in the Jth column connect to the Jth (+) line. To go from multiplexing to charlieplexing, note that microcontroller pins can take on three sates : Low (-), High (+), and Off ("high impedence" / "high z"). This means that each IO line can serve as both a (+) line and a (-) line, if we hook things up right. What happens if we use the same N pins to drive both the cathodes and the anodes of a multiplexed display? Everything works fine, as long as we use the "Off" state to stop current! There is one hitch though: there are some LEDs along the diagonal of the matrix that have their anodes and cathodes driven by the same IO pin -- there is no way to make these light up. But, no worries, since we are laying out our own board, we can just delete these! So, charlieplexed PCB design can be relatively simple: lay out a grid of LEDs as if you were to multiplex them, but connect the N anodes to the N cathodes, and delete the N leds that end up being connected to the same IO line at both ends!
+
+-- -- PCB design
+
+If you're doing this project yourself, it is possible to wire up the grid of LEDs on, say, a protoboard, by hand. However, this is a huge pain -- I did this once and have vowed never to do it again in my life. Instead of going through this tedium, you can design a custom board and get it professionally fabricated at a batch PCB service. I use the free version of <a href="http://www.cadsoftusa.com/">Eagle Cad</a> to design and prepare boards for manufacture. A full Eagle tutorial is beyond the scope of this writeup, but numerous tutorials can be found online.
+
+As a final note, you also want to add a capacitor across the ± power lines to reduce supply noise, and add a 1kOhm or 10kOhm pull up resistor for the reset pin. 
+
+-- -- Exporting gerber files for board fabrication
+
+One you have finalized and routed your board, you need to prepare design files to send to get the board fabricated. By far my favorite tutorial for this is on <a href="http://hackaday.com/2009/01/15/how-to-prepare-your-eagle-designs-for-manufacture/">Hackaday</a>. PCB designs get exported to so called "Gerber" files, which are like the PDFs of circuit board design. Once you have these files you can send them off to a fab house for production. For one-off boards, <a href="https://www.batchpcb.com/">BatchPCB</a> is the go-to place. For small runs, consider <a href="http://www.4pcb.com/">Advanced Circuits</a> or <a href="http://www.seeedstudio.com/depot/fusion-pcb-service-p-835.html?cPath=185">Seeed studio's Fusion PCB service</a>. For larger runs (>30), depending on board size, <a href="http://www.goldphoenixpcb.com/">Goldphoenix</a> is the place to go. Depending on which service you choose, you should get boards in a few days to five weeks. I went with Seeed because it is relatively cheap, and it took about a month to ship to the US. 
+
+-- -- Part sourcing
+
+For cheap LEDs I use Ebay. For all other components ( especially the AVR microcontollers ), I source from Mouser or Digikey. For a low cost USB to Serial adaptor, look for "USB To RS232 TTL PL2303HX" on Ebay -- these are cheaper than, say, an FTDI cable from Sparkfun, and have worked great for me.
+
+-- -- Assembly
+
+Soldering a million LEDs is tricky. I laser-cut a bracket to hold all the LEDs in place, then soldered them in one go. Patience ! Also, pay attention to LED orientations -- they will only work one way and putting a single LED in backwards can confused the carlieplexed driving. As a slightly unusual design choice, I opted to solder a SMT Attiny directly over a couple LEDs. This wouldn't work for pick and place assembly, so it's a poor design choice.
+
+-- -- Cleaning the boards
+
+After you're finished soldering, remove any solder flux adhered to the board. Apart from being unsightly, flux can be conductive and corrosive and damage the board over time. <a href="http://hackaday.com/2011/06/07/cleaning-flux-from-pcbs-the-easy-way/">Hackaday has a good tutorial<a/> on this. Personally, I filled an old jar with 90% Isopropanol, dunked the boards in there, and shook them around for a while -- it worked wonderfully.
+
+-- Firmware
+-- -- Software serial
+
+The Attiny24 does not have <a href="http://en.wikipedia.org/wiki/Universal_asynchronous_receiver/transmitter">hardware support for serial ( UART )</a>, so we'll have to make do with a software implementation. I implement software serial using polling at twice the serial rate (4800Hz), which is works well enough for transmitting little five bit packets. I'd rather not outline all the details of the firmware here as it gets really quite boring, and the source is well documented.
+
+-- -- Driving a charlieplexed array
+
+I scan the charlieplexed display very similarly to how one scans a multiplexed display. I iterate over each row, and set the IO pins to either (+) or "off" depending on the state of each LED in that row. One pin will be used as the cathode, which creates a "missing" LED in each row scan. I hook the (+) end of the "missed" LEDs to a final IO pin, and then scan these by turning that pin to (+) and setting all the other pins to either (-) or "off" depending on whether a light is on. I store the display data in the format that will be used for scanning the matrix, so that no additional conversion needs to be done for driving the display. To clean up this abstraction, I access display pixles through set() and get() functions so that the code for writing to the display is more clear.
+
+-- -- Compiling with avr-gcc
+
+I never remember the commands to compile and upload firmware, so here are the commands I used for future reference. 
+
+avr-gcc -Os -mmcu=attiny24 ./display_serial.c -o a.o #compile source to a file a.o targeting the AtTiny24
+avr-objcopy -j .text -j .data -O binary a.o a.bin #extract the text and data sections to make a binary for the AVR
+du -b ./a.bin # check the size ( this should be smaller than the amount of available flash )
+avrdude -c avrispmkII -p t24 -B4 -P /dev/ttyUSB1 -U flash:w:a.bin # upload the binary to ( in this case ) the AtTiny24
+
+
+
+
