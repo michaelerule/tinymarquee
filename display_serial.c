@@ -73,23 +73,12 @@ thanks to http://brownsofa.org/blog/archives/215 for explaining timer interrupts
 
 #define NOP __asm__("nop\n\t")
 #define N 10
-#define NN ((N)*(N))
-#define RNGMUL 13
-#define RNGMOD 0x4CE3
-#define glider  0xCE
-#define genesis 0x5E
-#define bomb    0x5D
-#define TIMEOUT 13
 #define SCANRATE 13
 
-//#include "alphabet.h"
-
-uint16_t rng = 79;
 uint16_t b0[N+1],b1[N+1];
 uint16_t *disp = &b0[0];
 uint16_t *buff = &b1[0];
 volatile uint8_t scanI = 0;
-uint8_t showcased = 0;
 
 // gets a pixel data from the marquee
 uint8_t get(uint8_t r, uint8_t c, uint16_t *d)  { 
