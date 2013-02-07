@@ -6,7 +6,7 @@ import codecs
 
 newsfile = 'news'
 baudrate = 4800
-delay = 2
+delay = .08
 
 execfile('load_font.py')
 execfile('simpleserial.py')

@@ -26,8 +26,8 @@ while 1:
 	with codecs.open(newsfile, encoding='utf-8') as myfile: # keep opening the file, maybe its different this time?
 		lines = myfile.readlines()
 		random.shuffle(lines)
-		lines = ' -- '.join(lines)
-		lines = ''.join(lines.split('\n'))
+		lines = u' -- '.join(lines)
+		lines = u''.join(lines.split('\n'))
 		length = len(lines)
 		for ch in lines:
 			if ch in mapping:
