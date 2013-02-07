@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import codecs
 
 fontfile = 'marquee_font.txt'
 # Load the font information

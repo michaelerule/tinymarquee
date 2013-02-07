@@ -7,6 +7,7 @@ This is a quick hack. For example it will get upset if you resize terminal
 after it starts.
 '''
 import time,sys,os,random
+import codecs
 
 newsfile = 'news'
 onsymbol = "▒"
@@ -22,7 +23,7 @@ os.system('reset')
 slideaway = [' '*5 for i in range(width)]
 
 while 1:
-	with open(newsfile) as myfile: # keep opening the file, maybe its different this time?
+	with codecs.open(newsfile, encoding='utf-8') as myfile: # keep opening the file, maybe its different this time?
 		lines = myfile.readlines()
 		random.shuffle(lines)
 		lines = ' -- '.join(lines)

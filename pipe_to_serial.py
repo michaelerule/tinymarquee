@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import serial,os,sys,time,tty,termios
 from pylab import *
+import codecs
 
 baudrate = 4800
 delay = .08
@@ -15,7 +16,7 @@ gg = _Getch()
 ser=startSerial(baudrate)
 
 while(1):
-	ch = gg()	
+	ch = unicode(gg()	)
 	sys.stdout.write(ch)
 	sys.stdout.flush()
 	if ch == '\x1Bc': # THIS IS BROKEN!
