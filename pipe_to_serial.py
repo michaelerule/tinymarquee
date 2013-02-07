@@ -3,6 +3,7 @@
 import serial,os,sys,time,tty,termios
 from pylab import *
 import codecs
+import codecs
 
 baudrate = 4800
 delay = .08
