@@ -49,7 +49,7 @@ fontfile = 'marquee_font.txt'
 onsymbol = "▒"
 
 # define the font mapping -- it's nonstandard
-mapping = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890., ;:-+=?!\'*^$♥&'
+mapping = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890., ;:-+=?!\'*^[♥&$'
 
 # Load the font information
 chars = None
@@ -72,14 +72,16 @@ while 1:
 		length = len(lines)
 		for ch in lines:
 			if ch in mapping:
-				chardata = chars[mapping.index(ch)]+[0,];
-				for column in chardata:
-				    columndata = [ onsymbol if ((column>>i)&1) else ' ' for i in range(5)]
-				    slideaway = slideaway[1:]+[columndata]
-				    data = '\n'.join(''.join(x) for x in zip(*slideaway))
-				    sys.stdout.write('\x1B[%dA'%clear+'\n'*vpad+'\r'+data)
-				    sys.stdout.flush()
-				    time.sleep(0.03)
+				i = mapping.index(ch)
+				if i>=0 and i<len(chars):
+					chardata = chars[i]+[0,];
+					for column in chardata:
+						columndata = [ onsymbol if ((column>>i)&1) else ' ' for i in range(5)]
+						slideaway = slideaway[1:]+[columndata]
+						data = '\n'.join(''.join(x) for x in zip(*slideaway))
+						sys.stdout.write('\x1B[%dA'%clear+'\n'*vpad+'\r'+data)
+						sys.stdout.flush()
+						time.sleep(0.03)
 
 os.system('reset')
 

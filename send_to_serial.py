@@ -14,7 +14,7 @@ if len(devs)<1:
 port = '/dev/'+devs[0]
 
 # Load the font information
-mapping = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890., ;:-+=?!\'*^$♥&'
+mapping = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890., ;:-+=?!\'*^[♥&$'
 chars = None
 with open(fontfile,'r') as f:
     data = ''.join(f.readlines())

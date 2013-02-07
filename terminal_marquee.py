@@ -14,6 +14,6 @@ import time
 os.system('./scroll.py &')
 while True:
 	os.system('./scrape_news.py 1>/dev/null &')
-	time.sleep(int(random.random()*6000/60))
+	time.sleep(int(random.random()*6000)+1000)
 
 
