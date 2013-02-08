@@ -83,12 +83,15 @@ Scrape reddit headlines
 -- Extract post title as a headline
 -- Trim whitespace
 ''')
-subreddits = 'worldnews news'.split()
-for subreddit in subreddits:
-	for child in json.load(urlopen("http://www.reddit.com/r/%s/top/.json"%subreddit))['data']['children']:
-		trim = ' '.join(child['data']['title'].split())
-		if trim:
-			headlines.add(trim)
+try:	
+	subreddits = 'worldnews news'.split()
+	for subreddit in subreddits:
+		for child in json.load(urlopen("http://www.reddit.com/r/%s/top/.json"%subreddit))['data']['children']:
+			trim = ' '.join(child['data']['title'].split())
+			if trim:
+				headlines.add(trim)
+except:
+	print "something went wrong when scraping from reddit, I'm sorry"
 
 documentation('''
 Done scraping news, headlines are:

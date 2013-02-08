@@ -11,10 +11,10 @@ import random
 import os
 import time
 
-os.system('./scroll.py &')
+os.system('./scroll_serial.py &')
 while True:
 	os.system('./scrape_news.py news 1>/dev/null &')
-	os.system('./scrape_sticks.py stocks 1>/dev/null &')
+	os.system('./scrape_stocks.py stocks 1>/dev/null &')
 	time.sleep(int(random.random()*6000)+1000)
 
 

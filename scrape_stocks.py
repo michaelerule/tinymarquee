@@ -49,6 +49,10 @@ stocks = '''
 S&P500
 DOW
 DBV
+VEIEX
+VGPMX
+VFORX
+VWINX
 '''.split('\n')[1:-1]
 
 for name in stocks:
