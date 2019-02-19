@@ -80,7 +80,7 @@ uint16_t *disp = &b0[0];
 uint16_t *buff = &b1[0];
 volatile uint8_t scanI = 0;
 
-// gets a pixel data from the marquee
+// gets pixel data from the marquee
 uint8_t get(uint8_t r, uint8_t c, uint16_t *d)  { 
 	if (c<4)	  c += 6;
 	else if (c<9) c -= 4;

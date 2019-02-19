@@ -7,7 +7,7 @@ these numbers to the scrolling marquee without further processing, and they
 will draw out a character. 
 '''
 
-fname = 'alphabet.png'
+fname = 'alphabet2.png'
 
 from javax.imageio import ImageIO
 from java.io import File

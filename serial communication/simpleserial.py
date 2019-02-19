@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-devs = [s for s in os.listdir('/dev') if 'ttyUSB' in s]
+devs = [s for s in os.listdir('/dev') if 'ttyUSB' in s or 'ttyACM' in s]
 if len(devs)<1:
 	print "no serial devices found!"
 	sys.exit(0)
